@@ -9,10 +9,10 @@ const App = () => {
     fetch('https://www.leffatykki.com/xml/ilta/tvssa/tv-today.xml')
       .then(res => res.text())
       .then(text => parser.parse(text))
-      .then(o => {
-        const movies = Object.values(o.today.movie)
+      .then(parsed => {
+        const movies = Object.values(parsed.today.movie)
           .map(({ name, cover, broadcast }) => ({ name, cover, broadcast }))
-        //console.log(Object.keys(o.today.movie[0].broadcast))
+        //console.log(Object.keys(parsed.today.movie[0].broadcast))
         
         setMovies(movies)
       })
@@ -20,7 +20,12 @@ const App = () => {
 
   return (
     <ScrollView>
-      {movies.map(({ name, broadcast: { channel, date } }) => <Text key={channel + date}>{name}</Text>)}
+      {movies.map(({ name, broadcast: { channel, date } }) => {
+        const d = new Date(date)
+        const dstring = `${d.getDate()}.${d.getMonth()}.${d.getFullYear()}`
+
+        return <Text key={channel + date}>{`${name}, ${channel} ${dstring}`}</Text>
+      })}
     </ScrollView>
   )
 }
